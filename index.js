@@ -3,11 +3,19 @@
 const assert = require('assert');
 
 function add(_add1, _add2) {
+    if (_add1 === '0') {
+        return _add2;
+    }
+    if (_add2 === '0') {
+        return _add1;
+    }
     if (_add1[0] === '-' && _add2[0] === '-') {
         return '-' + add(_add1.slice(1, _add1.length), _add2.slice(1, _add2.length));
-    } else if (_add1[0] === '-') {
+    }
+    if (_add1[0] === '-') {
         return subtract(_add2, _add1.slice(1, _add1.length));
-    } else if (_add2[0] === '-') {
+    }
+    if (_add2[0] === '-') {
         return subtract(_add1, _add2.slice(1, _add2.length));
     }
 
@@ -38,11 +46,16 @@ function add(_add1, _add2) {
 }
 
 function subtract(from, what) {
+    if (what === '0') {
+        return from;
+    }
     if (from[0] === '-' && what[0] === '-') {
         return '-' + subtract(from.slice(1, from.length), what.slice(1, what.length));
-    } else if (from[0] === '-') {
+    }
+    if (from[0] === '-') {
         return subtract(what, from.slice(1, from.length));
-    } else if (what[0] === '-') {
+    }
+    if (what[0] === '-') {
         return add(from, what.slice(1, what.length));
     }
 
@@ -69,6 +82,54 @@ function subtract(from, what) {
     return out.reverse().join('');
 }
 
+function multiply(_mult1, _mult2) {
+    if (_mult1 === '0' || _mult2 === '0') {
+        return '0';
+    }
+    if (_mult1[0] === '-' && _mult2[0] === '-') {
+        return multiply(_mult1.slice(1, _mult1.length), _mult2.slice(1, _mult2.length));
+    }
+    if (_mult1[0] === '-') {
+        return '-' + multiply(_mult1.slice(1, _mult1.length), _mult2);
+    }
+    if (_mult2[0] === '-') {
+        return '-' + multiply(_mult1, _mult2.slice(1, _mult2.length));
+    }
+
+    let mult1;
+    let next = 0;
+
+    if (_mult2.length === 1) {
+        let out = [];
+        let coef = +_mult2[0];
+        mult1 = strToReversedArr(_mult1);
+        for (let i = 0; i < mult1.length; i++) {
+            let multiplyed = +mult1[i] || 0;
+            let temp = multiplyed * coef + next;
+            out.push(temp % 10);
+            next = Math.floor(temp / 10);
+        }
+        if (next > 0) {
+            out.push(next);
+        }
+        return out.reverse().join('');
+    }
+
+    let prod = '0';
+    let mult2 = strToReversedArr(_mult2);
+    for (let i = 0; i < mult2.length; i++) {
+        prod = add(prod, exp(multiply(_mult1, mult2[i]), i));
+    }
+    return prod;
+}
+
+
+function exp(num, power) {
+    for (; power > 0; power--) {
+        num += '0';
+    }
+    return num;
+}
 
 function strToReversedArr(input) {
     return input.split('').reverse();
@@ -125,5 +186,14 @@ assert.equal(subtract('12345678901234567890', '1'), '12345678901234567889');
 assert.equal(subtract('12345678901234567890', '11'), '12345678901234567879');
 assert.equal(subtract('1', '12345678901234567890'), '-12345678901234567889');
 
+assert.equal(multiply('1', '1'), '1');
+assert.equal(multiply('1', '-1'), '-1');
+assert.equal(multiply('-1', '1'), '-1');
+assert.equal(multiply('1', '0'), '0');
+assert.equal(multiply('-1', '0'), '0');
+assert.equal(multiply('3', '4'), '12');
+assert.equal(multiply('12345678900000', '12'), '148148146800000');
+assert.equal(multiply('12', '12345678900000'), '148148146800000');
+assert.equal(multiply('12', '-12345678900000'), '-148148146800000');
 
 console.log('pass');

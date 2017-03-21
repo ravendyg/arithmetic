@@ -3,6 +3,14 @@
 const assert = require('assert');
 
 function add(_add1, _add2) {
+    if (_add1[0] === '-' && _add2[0] === '-') {
+        return '-' + add(_add1.slice(1, _add1.length), _add2.slice(1, _add2.length));
+    } else if (_add1[0] === '-') {
+        return subtract(_add2, _add1.slice(1, _add1.length));
+    } else if (_add2[0] === '-') {
+        return subtract(_add1, _add2.slice(1, _add2.length));
+    }
+
     let out = [];
     const add1 = strToReversedArr(_add1);
     const add2 = strToReversedArr(_add2);
@@ -25,11 +33,19 @@ function add(_add1, _add2) {
     if (next > 0) {
         out.push(next);
     }
-    
+
     return out.reverse().join('');
 }
 
 function subtract(from, what) {
+    if (from[0] === '-' && what[0] === '-') {
+        return '-' + subtract(from.slice(1, from.length), what.slice(1, what.length));
+    } else if (from[0] === '-') {
+        return subtract(what, from.slice(1, from.length));
+    } else if (what[0] === '-') {
+        return add(from, what.slice(1, what.length));
+    }
+
     let out = [];
     const {max, min, sign} = putBiggestFirst(strToReversedArr(from), strToReversedArr(what));
 
@@ -52,6 +68,7 @@ function subtract(from, what) {
 
     return out.reverse().join('');
 }
+
 
 function strToReversedArr(input) {
     return input.split('').reverse();
@@ -88,18 +105,25 @@ function putBiggestFirst(num1, num2) {
 }
 
 assert.equal(add('1', '2'), '3');
+assert.equal(add('1', '-2'), '-1');
+assert.equal(add('-1', '-2'), '-3');
 assert.equal(add('2', '1'), '3');
 assert.equal(add('342', '1'), '343');
 assert.equal(add('342', '9'), '351');
 assert.equal(add('12345678901234567890', '1'), '12345678901234567891');
 assert.equal(add('12345678901234567890', '11'), '12345678901234567901');
+assert.equal(add('11', '12345678901234567890'), '12345678901234567901');
+assert.equal(add('11', '-12345678901234567890'), '-12345678901234567879');
 
 assert.equal(subtract('1', '2'), '-1');
 assert.equal(subtract('2', '1'), '1');
+assert.equal(subtract('2', '-1'), '3');
+assert.equal(subtract('-2', '-1'), '-1');
 assert.equal(subtract('342', '9'), '333');
 assert.equal(subtract('9', '3429'), '-3420');
 assert.equal(subtract('12345678901234567890', '1'), '12345678901234567889');
 assert.equal(subtract('12345678901234567890', '11'), '12345678901234567879');
 assert.equal(subtract('1', '12345678901234567890'), '-12345678901234567889');
+
 
 console.log('pass');

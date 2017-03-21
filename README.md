@@ -1,1 +1,3 @@
-Subtract and multiply big numbers.
+Subtract, add, and multiply big numbers.
+
+TODO: integer division and reminder.

@@ -64,13 +64,15 @@ function subtract(from, what) {
     }
 
     let out = [];
-    const {max, min, sign} = utils.putBiggestFirst(utils.strToReversedArr(from), utils.strToReversedArr(what));
+    const {max, min, sign} = utils.putBiggestFirst(from, what);
+    let _max = utils.strToReversedArr(max);
+    let _min = utils.strToReversedArr(min);
 
     let next = 0;
 
-    for (let i = 0; i < max.length; i++) {
-        let f = +max[i];
-        let w = +min[i] || 0;
+    for (let i = 0; i < _max.length; i++) {
+        let f = +_max[i];
+        let w = +_min[i] || 0;
         let subtr = w + next;
 
         if (f >= subtr) {
@@ -83,6 +85,18 @@ function subtract(from, what) {
     }
     out.push(sign);
 
-    return out.reverse().join('');
+    out = out.reverse().join('');
+
+    while (out[0] === '0') {
+        out = out.slice(1, out.length);
+    }
+
+    out = out.replace(/^\-0*/, '-').replace(/^0*/, '');
+
+    if (out === '0' || out === '') {
+        return '0'
+    } else {
+        return out;
+    }
 }
 

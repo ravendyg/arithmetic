@@ -32,7 +32,7 @@ function putBiggestFirst(num1, num2) {
         for (let i = 0; i < num1.length; i++) {
             let a = +num1[i];
             let b = +num2[i];
-            if (a <= b) {
+            if (a < b) {
                 max = num2;
                 min = num1;
                 sign = '-';
@@ -43,6 +43,8 @@ function putBiggestFirst(num1, num2) {
                 break;
             }
         }
+        max = max || num1;
+        min = min || num2;
     }
     return {max, min, sign};
 }

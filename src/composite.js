@@ -1,10 +1,10 @@
 'use strict';
 
 const utils = require('./utils');
-const {add} = require('./basic');
+const {add, subtract} = require('./basic');
 
 module.exports = {
-  multiply
+  multiply, divide
 };
 
 function multiply(_mult1, _mult2) {
@@ -46,4 +46,47 @@ function multiply(_mult1, _mult2) {
         prod = add(prod, utils.exp(multiply(_mult1, mult2[i]), i));
     }
     return prod;
+}
+
+function divide(top, bottom) {
+    if (bottom === '0' || bottom === '-0') {
+        throw new Error('Division by zero');
+    }
+    if (bottom === '1') {
+        return [top, '0'];
+    }
+    if (bottom === '-1') {
+        if (top[0] === '-') {
+            return [top.slice(1, top.length), '0'];
+        } else {
+            return ['-' + top, '0'];
+        }
+    }
+    if (top[0] === '-' && bottom[0] === '-') {
+        let [coef, remainder] = divide(top.slice(1, top.length), bottom.slice(1, bottom.length));
+        return [coef, '-' + remainder];
+    }
+    if (top[0] === '-') {
+        let [coef, remainder] = divide(top.slice(1, top.length), bottom);
+        return ['-' + coef, '-' + remainder];
+    }
+    if (bottom[0] === '-') {
+        let [coef, remainder] = divide(top, bottom.slice(1, bottom.length));
+        return ['-' + coef, remainder];
+    }
+    let {max} = utils.putBiggestFirst(top, bottom);
+    if (max !== top) {
+        return ['0', top];
+    }
+
+    let coef = '0', res = '0';
+    while (true) {
+        res = subtract(top, bottom);
+        if (res[0] === '-') {
+            return [coef, top];
+        } else {
+            coef = add(coef, '1');
+            top = res;
+        }
+    }
 }

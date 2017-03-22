@@ -1,9 +1,9 @@
 'use strict';
 
 const {add, subtract} = require('./src/basic');
-const {multiply} = require('./src/composite');
+const {multiply, divide} = require('./src/composite');
 
 module.exports = {
     add, subtract,
-    multiply
+    multiply, divide
 };
